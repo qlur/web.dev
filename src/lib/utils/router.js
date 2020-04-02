@@ -38,6 +38,25 @@ function onPopState(e) {
 }
 
 /**
+ * @param {string} hash to scroll to
+ */
+function scrollToHashOrTop(hash) {
+  // Since we're loading this page dynamically, look for the target hash-ed
+  // element (if any) and scroll to it.
+  if (hash.startsWith("#")) {
+    hash = hash.substr(1);
+  }
+  if (hash) {
+    const target = document.getElementById(hash);
+    if (target) {
+      target.scrollIntoView();
+      return;
+    }
+  }
+  document.documentElement.scrollTop = 0;
+}
+
+/**
  * Click handler that intercepts potential URL changes via <a href="...">.
  *
  * @param {!MouseEvent} e
@@ -86,10 +105,11 @@ export function listen(handler) {
 
   let previousController = null;
 
-  globalHandler = (url) => {
+  globalHandler = (url, hash) => {
     const isNavigation = Boolean(url);
     if (!isNavigation) {
       url = getUrl();
+      hash = window.location.hash;
     }
 
     const firstRun = previousController === null;
@@ -109,7 +129,7 @@ export function listen(handler) {
       }
       readyRun = true;
 
-      const update = url + window.location.hash;
+      const update = url + hash;
       if (isNavigation) {
         window.history.pushState(state, null, update);
       } else {
@@ -133,10 +153,10 @@ export function listen(handler) {
       .catch((err) => {
         // Only throw errors if not preempted and not the first load.
         if (!controller.signal.aborted && !firstRun) {
-          window.location.href = window.location.href;
+          window.location.href = url; // always use the updated URL
           throw err;
         }
-        console.warn("err loading (preempted)", url, err);
+        console.warn("err loading", url, err);
         return true;
       });
   };
@@ -154,7 +174,7 @@ export function listen(handler) {
  *
  * This return false if the request was pre-empted (or was a hash change).
  *
- * @param {string} url to load
+ * @param {string} url to load, including hash
  * @return {boolean} whether a route happened and to prevent default behavior
  */
 export function route(url) {
@@ -170,18 +190,9 @@ export function route(url) {
     return false;
   }
 
-  globalHandler(candidateUrl).then((aborted) => {
-    if (aborted) {
-      return false;
-    }
-
-    // Since we're loading this page dynamically, look for the target hash-ed
-    // element (if any) and scroll to it.
-    const target = document.getElementById(u.hash.substr(1)) || null;
-    if (target) {
-      target.scrollIntoView();
-    } else {
-      document.documentElement.scrollTop = 0;
+  globalHandler(candidateUrl, u.hash).then((aborted) => {
+    if (!aborted) {
+      scrollToHashOrTop(u.hash);
     }
   });
   return true;

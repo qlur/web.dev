@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const fs = require("fs");
+const localeCode = require("iso-639-1");
+const path = require("path");
 
-const {html} = require("common-tags");
+const defaultLocale = "en";
+const isProd = Boolean(process.env.GAE_APPLICATION);
+const contentDir = isProd ? "../dist" : "../src/site/content";
+const dirs = fs.readdirSync(path.join(__dirname, contentDir));
+const supportedLocales = dirs.filter((dir) => localeCode.validate(dir));
 
-module.exports = (content, label) => {
-  if (!label) {
-    /* eslint-disable max-len */
-    throw new Error(
-      `Can't create Tabs component without a label. Did you forget to pass the label as a string?`,
-    );
-    /* eslint-enable max-len */
-  }
-  // prettier-ignore
-  return html`
-    <web-tabs label="${label}">
-    ${content}
-    </web-tabs>
-  `;
+const isSupportedLocale = (locale) => supportedLocales.indexOf(locale) > -1;
+
+module.exports = {
+  defaultLocale,
+  supportedLocales,
+  isSupportedLocale,
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-module.exports = (content, label) => {
-  if (!label) {
-    /* eslint-disable max-len */
-    throw new Error(
-      `Can't create Tab component without a label. Did you forget to pass the label as a string?`,
-    );
-    /* eslint-enable max-len */
-  }
+const {html} = require("common-tags");
+const md = require("markdown-it")();
 
-  const dataLabel = 'data-label="' + label + '"';
-  // prettier-ignore
-  return `<div ${dataLabel}>${content}</div>`;
+module.exports = (content) => {
+  return html`
+    <p class="w-label">${md.renderInline(content)}</p>
+  `;
 };

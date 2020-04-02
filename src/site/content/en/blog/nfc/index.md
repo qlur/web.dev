@@ -10,6 +10,8 @@ thumbnail: thumbnail.jpg
 alt: A photo of NFC tags
 description: |
   Reading and writing to NFC tags is now possible on Chrome for Android.
+origin_trial:
+  url: https://developers.chrome.com/origintrials/#/view_trial/236438980436951041
 tags:
   - post # post is a required tag for the article to show up in the blog.
   - capabilities
@@ -449,7 +451,7 @@ const reader = new NDEFReader();
 await reader.scan({ signal: abortController.signal });
 
 const writer = new NDEFWriter();
-await writer.push("Hello world", { signal: abortController.signal });
+await writer.write("Hello world", { signal: abortController.signal });
 
 document.querySelector("#abortButton").onclick = event => {
   abortController.abort();

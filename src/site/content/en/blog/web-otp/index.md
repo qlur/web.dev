@@ -145,12 +145,12 @@ the user needing to press **Continue**.
 
 The whole process is diagrammed in the image below.
 
-<figure class="w-figure w-figure--center">
+<figure class="w-figure">
   <img src="./diagram.png" width="486" height="499" />
   <figcaption class="w-figcaption w-figcaption--fullbleed">
     Web OTP API diagram
   </figcaption>
-</figure
+</figure>
 
 Try [the demo](https://sms-receiver-demo.glitch.me) yourself. It doesn't ask for
 your phone number or send an SMS to your device, but you can send one from

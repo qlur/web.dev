@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-const {html} = require("common-tags");
+const path = require("path");
+const site = require("../_data/site");
+const locales = require("../../../shared/locale");
 
-/* eslint-disable require-jsdoc, max-len */
-module.exports = (content, blurb) => {
-  // Need newlines around ${content} so MD parser renders it as MD, not HTML
-  // prettier-ignore
-  return html`
-    <div class="w-callout">
-      <div class="w-callout__header">
-        <h2 class="w-callout__lockup w-callout__lockup--assess">
-          Check for understanding
-        </h2>
-        <div class="w-callout__blurb">
-          ${blurb}
-        </div>
-      </div>
-
-      ${content}
-
-    </div>
-  `;
+module.exports = (inputPath, lang) => {
+  // Check if requested a supported locale and other than the default one.
+  if (
+    !inputPath ||
+    lang === locales.defaultLocale ||
+    !locales.isSupportedLocale(lang)
+  ) {
+    return "";
+  }
+  inputPath = inputPath.replace(`/${lang}/`, `/${site.defaultLocale}/`);
+  return path.join(site.gitlocalize, lang, inputPath);
 };
